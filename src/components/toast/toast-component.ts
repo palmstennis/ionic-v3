@@ -12,11 +12,13 @@ import { ViewController } from '../../navigation/view-controller';
   selector: 'ion-toast',
   template:
     '<div class="toast-wrapper" ' +
+      '(click)="clickBackground()" ' +
       '[class.toast-bottom]="d.position === \'bottom\'" ' +
       '[class.toast-middle]="d.position === \'middle\'" ' +
-      '[class.toast-top]="d.position === \'top\'"> ' +
+      '[class.toast-top]="d.position === \'top\'" ' +
+      '[class.has-click]="!!d.onClick"> ' +
       '<div class="toast-container"> ' +
-        '<div class="toast-message" id="{{hdrId}}" *ngIf="d.message">{{d.message}}</div> ' +
+        '<div class="toast-message" (click)="msgCLick()" id="{{hdrId}}" *ngIf="d.message" [innerHTML]="d.message"></div> ' +
         '<button ion-button clear class="toast-button" *ngIf="d.showCloseButton" (click)="cbClick()"> ' +
           '{{ d.closeButtonText || \'Close\' }} ' +
          '</button> ' +
@@ -37,6 +39,8 @@ export class ToastCmp implements AfterViewInit {
     closeButtonText?: string;
     dismissOnPageChange?: boolean;
     position?: string;
+    onClick?: (alert: any) => {};
+    onClickBackground?: (alert: any) => {};
   };
   descId: string;
   dismissTimeout: number = undefined;
@@ -93,6 +97,18 @@ export class ToastCmp implements AfterViewInit {
   cbClick() {
     if (this.enabled) {
       this.dismiss('close');
+    }
+  }
+
+  msgCLick() {
+    if (this.d.onClick) {
+      this.d.onClick(this);
+    }
+  }
+
+  clickBackground() {
+    if (this.d.onClickBackground) {
+      this.d.onClickBackground(this);
     }
   }
 

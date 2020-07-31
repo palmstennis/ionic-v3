@@ -191,7 +191,18 @@ export class ViewController {
     this._dismissRole = role;
 
     const options = Object.assign({}, this._leavingOpts, navOptions);
-    return this._nav.removeView(this, options).then(() => data);
+    let dismissPromise = Promise.resolve();
+
+    if (this._onWillDismiss) {
+      const willDismissResult = this._onWillDismiss(this._dismissData, this._dismissRole);
+      dismissPromise = dismissPromise.then(() => willDismissResult);
+      this._onWillDismiss = null;
+    }
+
+    return dismissPromise
+      .then(() => this._nav.removeView(this, options))
+      .then(() => data)
+      .catch(() => data);
   }
 
   /**
